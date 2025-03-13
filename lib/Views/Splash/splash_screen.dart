@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
-
+static const routeName = "splash";
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -45,6 +45,7 @@ class _SplashScreenState extends State<SplashScreen>
     await flutterTts.speak("ابدأ");
     await Future.delayed(Duration(seconds: 3));
     Navigator.push(
+      // ignore: use_build_context_synchronously
       context,
       MaterialPageRoute(builder: (context) => OnboardingScreen()),
     );
@@ -92,6 +93,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: AnimatedDefaultTextStyle(
                 duration: Duration(seconds: 2),
                 style: GoogleFonts.cairo(
+                  // ignore: deprecated_member_use
                   color: kveryWhite.withOpacity(_animation.value),
                   fontWeight: FontWeight.bold,
                   fontSize: w * .09 * _animation.value,

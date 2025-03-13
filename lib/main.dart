@@ -1,3 +1,4 @@
+import 'package:dyslexia_app/Core/Helper/on_generate_route_function.dart';
 import 'package:dyslexia_app/Views/Splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: '',
+      onGenerateRoute: onGenerateRoute,
+      initialRoute: SplashScreen.routeName,
       home: SplashScreen(),
       
      );
