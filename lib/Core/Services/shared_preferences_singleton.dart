@@ -11,6 +11,6 @@ class SharedPreferencesSingleton {
   }
 
   static getBoo(String key) {
-  return  _instance.getBool(key) ?? false;
+    return _instance.getBool(key) ?? false;
   }
 }

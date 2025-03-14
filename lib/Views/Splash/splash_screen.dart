@@ -1,13 +1,18 @@
 import 'package:dyslexia_app/Core/Constants/colors.dart';
+import 'package:dyslexia_app/Core/Constants/constants.dart';
+import 'package:dyslexia_app/Core/Services/shared_preferences_singleton.dart';
+import 'package:dyslexia_app/Core/Services/text_to_speech.dart';
+import 'package:dyslexia_app/Core/Utils/app_images.dart';
+import 'package:dyslexia_app/Views/Auth/login_screen.dart';
 import 'package:dyslexia_app/Views/OnBoarding/onboarding_screen.dart';
 import 'package:dyslexia_app/Views/Splash/Widgets/custom_splash_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
-static const routeName = "splash";
+  static const routeName = "splash";
+
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -16,7 +21,6 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  late FlutterTts flutterTts;
 
   @override
   void initState() {
@@ -27,34 +31,18 @@ class _SplashScreenState extends State<SplashScreen>
       duration: Duration(seconds: 2),
     );
 
-    _animation = Tween<double>(begin: 0, end: 1).animate(_controller)
-      ..addListener(() {
+    _animation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    )..addListener(() {
         setState(() {});
       });
 
-    _controller.forward();
-    flutterTts = FlutterTts();
-    _initializeTts();
-  }
-
-  Future<void> _initializeTts() async {
-    await flutterTts.setLanguage("ar-SA");
-  }
-
-  Future<void> _playButtonSound() async {
-    await flutterTts.speak("ابدأ");
-    await Future.delayed(Duration(seconds: 3));
-    Navigator.push(
-      // ignore: use_build_context_synchronously
-      context,
-      MaterialPageRoute(builder: (context) => OnboardingScreen()),
-    );
+    _controller.repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    flutterTts.stop();
     super.dispose();
   }
 
@@ -80,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen>
                 color: kveryWhite,
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: AssetImage('assets/images/logo.jpeg'),
+                  image: AssetImage(Assets.imagesLogo),
                 ),
               ),
             ),
@@ -90,15 +78,17 @@ class _SplashScreenState extends State<SplashScreen>
             left: w * .2,
             right: w * .2,
             child: Center(
-              child: AnimatedDefaultTextStyle(
-                duration: Duration(seconds: 2),
-                style: GoogleFonts.cairo(
-                  // ignore: deprecated_member_use
-                  color: kveryWhite.withOpacity(_animation.value),
-                  fontWeight: FontWeight.bold,
-                  fontSize: w * .09 * _animation.value,
+              child: AnimatedOpacity(
+                opacity: _animation.value,
+                duration: Duration(seconds: 1),
+                child: Text(
+                  "عسر القراءة",
+                  style: GoogleFonts.cairo(
+                    color: kveryWhite,
+                    fontWeight: FontWeight.bold,
+                    fontSize: w * .08,
+                  ),
                 ),
-                child: Text("عسر القراءة"),
               ),
             ),
           ),
@@ -108,13 +98,26 @@ class _SplashScreenState extends State<SplashScreen>
             bottom: h * .08,
             child: CustomSplashButton(
               text: "ابدأ",
-              onTap: () {
-                _playButtonSound();
+              onTap: () async {
+                await TextToSpeech.speak('ابدأ');
+                await Future.delayed(Duration(seconds: 1));
+                excuteNavigation();
               },
             ),
           ),
         ],
       ),
     );
+  }
+
+  void excuteNavigation() async {
+    bool isOnBoardingScreenSeen =
+        SharedPreferencesSingleton.getBoo(kIsOnBoardingScreenSeen);
+    await Future.delayed(const Duration(seconds: 3));
+    if (isOnBoardingScreenSeen) {
+      Navigator.pushReplacementNamed(context, LoginScreen.loginRoute);
+    } else {
+      Navigator.pushReplacementNamed(context, OnboardingScreen.onBoardingRoute);
+    }
   }
 }

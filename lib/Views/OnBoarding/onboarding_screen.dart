@@ -1,150 +1,88 @@
+import 'package:dots_indicator/dots_indicator.dart';
+import 'package:dyslexia_app/Core/Constants/colors.dart';
+import 'package:dyslexia_app/Core/Constants/constants.dart';
+import 'package:dyslexia_app/Core/Services/shared_preferences_singleton.dart';
+import 'package:dyslexia_app/Views/Auth/login_screen.dart';
+import 'package:dyslexia_app/Views/OnBoarding/Widgets/custom_button.dart';
+import 'package:dyslexia_app/Views/OnBoarding/Widgets/on_boarding_page_view.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
-static const String onBoardingRoute = 'onboarding';
+  static const String onBoardingRoute = 'onboarding';
+
   @override
-  _OnboardingScreenState createState() => _OnboardingScreenState();
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
+  late PageController pageController;
+  double currentPage = 0;
 
-  final List<Map<String, String>> onboardingData = [
-    {
-      "image": "assets/onboarding1.png",
-      "title": "تعلم الحروف",
-      "description": "ابدأ بتعلم الحروف الهجائية بشكل تفاعلي.",
-    },
-    {
-      "image": "assets/onboarding2.png",
-      "title": "قراءة الكلمات",
-      "description": "تدرّب على قراءة الكلمات البسيطة والمقاطع الصوتية.",
-    },
-    {
-      "image": "assets/onboarding3.png",
-      "title": "فهم الجمل",
-      "description": "اقرأ الجمل القصيرة وأجب على الأسئلة لتحسين الفهم.",
-    },
-  ];
+  @override
+  void initState() {
+    pageController = PageController(initialPage: 0);
+    pageController.addListener(() {
+      setState(() {
+        currentPage = pageController.page!;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kveryWhite,
       body: Column(
         children: [
           Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: onboardingData.length,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                return OnboardingPage(
-                  image: onboardingData[index]["image"]!,
-                  title: onboardingData[index]["title"]!,
-                  description: onboardingData[index]["description"]!,
-                );
-              },
+            child: SafeArea(
+              child: OnboardingPageView(
+                pageController: pageController,
+              ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                  );
-                },
-                child: Text("تخطي"),
-              ),
-              Row(
-                children: List.generate(
-                  onboardingData.length,
-                  (index) => Container(
-                    margin: EdgeInsets.symmetric(horizontal: 4),
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _currentPage == index ? Colors.blue : Colors.grey,
+          const SizedBox(height: 5),
+          SafeArea(
+            child: Column(
+              children: [
+                DotsIndicator(
+                  dotsCount: 3,
+                  position: currentPage,
+                  decorator: DotsDecorator(
+                    activeColor: kRed,
+                    color: kGrey,
+                  ),
+                ),
+                const SizedBox(height: 29),
+                AnimatedOpacity(
+                  opacity: currentPage == 2 ? 1.0 : 0.0,
+                  duration: Duration(milliseconds: 300),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: CustomButton(
+                      onpressed: () {
+                        SharedPreferencesSingleton.setBool(
+                            kIsOnBoardingScreenSeen, true);
+                        Navigator.of(context)
+                            .pushReplacementNamed(LoginScreen.loginRoute);
+                      },
+                      text: 'ابدأ الآن',
                     ),
                   ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (_currentPage < onboardingData.length - 1) {
-                    _pageController.nextPage(
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.ease,
-                    );
-                  } else {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()),
-                    );
-                  }
-                },
-                child: Text(_currentPage == onboardingData.length - 1 ? "ابدأ" : "التالي"),
-              ),
-            ],
+                const SizedBox(height: 43),
+              ],
+            ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class OnboardingPage extends StatelessWidget {
-  final String image;
-  final String title;
-  final String description;
-
-  const OnboardingPage({super.key, required this.image, required this.title, required this.description});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(image, width: 200, height: 200),
-        SizedBox(height: 20),
-        Text(
-          title,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40),
-          child: Text(
-            description,
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("الشاشة الرئيسية"),
-      ),
-      body: Center(
-        child: Text("مرحبًا! هذه هي الشاشة الرئيسية."),
       ),
     );
   }
