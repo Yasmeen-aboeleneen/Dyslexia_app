@@ -1,9 +1,12 @@
 import 'package:dyslexia_app/Core/Constants/colors.dart';
 import 'package:dyslexia_app/Core/Widgets/custom_text_form_field.dart';
+import 'package:dyslexia_app/Views/Auth/Widgets/or_divider.dart';
 import 'package:dyslexia_app/Views/OnBoarding/Widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+
+import 'dont_have_acc.dart';
 
 class LoginScreenBody extends StatelessWidget {
   const LoginScreenBody({super.key});
@@ -59,29 +62,12 @@ class LoginScreenBody extends StatelessWidget {
             SizedBox(
               height: h * .033,
             ),
-            Text.rich(TextSpan(children: [
-              TextSpan(
-                  text: 'لا تمتلك حساب',
-                  style: GoogleFonts.cairo(
-                      color: kMGrey,
-                      fontWeight: FontWeight.w700,
-                      fontSize: w * .048)),
-              TextSpan(
-                  text: " ؟",
-                  style: GoogleFonts.cairo(
-                      color: kMGrey,
-                      fontWeight: FontWeight.w600,
-                      fontSize: w * .045)),
-              TextSpan(
-                  text: 'قم بإنشاء حساب',
-                  style: GoogleFonts.cairo(
-                      color: kPrimary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: w * .048))
-            ]))
+            DontHaveAnAccountWidget(w: w),
+            OrDivider()
           ],
         ),
       ),
     );
   }
 }
+
