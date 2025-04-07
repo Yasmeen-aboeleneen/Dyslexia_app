@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-static const String loginRoute = 'login';
+  static const String loginRoute = 'login';
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -14,12 +14,11 @@ static const String loginRoute = 'login';
 class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
-     var w = MediaQuery.of(context).size.width;
+    var w = MediaQuery.of(context).size.width;
     // var h = MediaQuery.of(context).size.height;
-    return   Scaffold(
-      appBar: BuildAppBar(context, w, title: 'تسجيل الدخول'),
-      backgroundColor: kveryWhite,
-      body:  LoginScreenBody()
-    );
+    return Scaffold(
+        appBar: BuildAppBar(context, w, title: 'تسجيل الدخول'),
+        backgroundColor: kveryWhite,
+        body: LoginScreenBody());
   }
 }
